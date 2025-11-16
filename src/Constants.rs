@@ -1,0 +1,16 @@
+pub(crate) const SCORE_HISTORY_WEIGHT: i128 = 70;
+pub(crate) const VOTE_HISTORY_WEIGHT: i128 = 30;
+pub(crate) const ONE_HOUR_SECONDS: u32 = 420;
+pub(crate) const TRUST_TOKEN_PERCENTAGE: i128 = 30;
+pub(crate) const LESS_HUNDRED_POINTS: i128 = -100;
+pub(crate) const HUNDRED_POINTS: i128 = 100;
+pub(crate) const FIFTY_PERCENT: i128 = 50;
+pub(crate) const TEN_PERCENT: i128 = 10;
+pub(crate) const TWENTY_PERCENT: i128 = 20;
+pub(crate) const THREE_PERCENT: i128 = 3;
+pub(crate) const FIVE_PERCENT: i128 = 5;
+pub(crate) const HUNDRED_PERCENT: i128 = 100;
+
+pub(crate) const TWENTY_POINTS: i128 = 20;
+pub(crate) const MINUS_TWENTY_POINTS: i128 = -20;
+pub(crate) const FIFTY_POINTS: i128 = 50;
