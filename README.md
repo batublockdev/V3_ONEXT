@@ -29,7 +29,6 @@ Pure on-chain game theory with economic incentives for honesty.
 
 ## How It Works (Flow)
 
-```mermaid
 graph TD
     A[Admin signs & sets game] --> B[Users create private rooms]
     B --> C[Invite friends]
@@ -41,13 +40,8 @@ graph TD
     G -->|Dispute| I[Supreme Court activated]
     I --> J[24-hour final decision]
     J --> H
-    H --> K[Users claim winnings]´´´
+    H --> K[Users claim winnings] 
 
-A decentralized, trust-minimized betting engine built on the **Stellar Soroban** smart contract platform. This contract enables private betting rooms, peer‑to‑peer result submission, consensus‑based validation, dispute resolution, and automated payouts — without any external oracles.
-
-This README documents the full architecture, flows, storage, security, and usage of the contract.
-
----
 
 ## 📌 Overview
 The **BettingContract** allows users to participate in **private, invite‑only betting rooms** for predefined games. Bets are placed in USD tokens with optional collateral (USD or TRUST). Results are submitted by participants and validated through decentralized voting.
