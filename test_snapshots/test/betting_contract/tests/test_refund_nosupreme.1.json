@@ -100,7 +100,7 @@
                   "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD2KM"
                 },
                 {
-                  "bytes": "3d90156c314c33f55b3a102007305aa884102b983dc9dcee9f8755d8b81576e3"
+                  "bytes": "643fe70833a2f6dfe59a3f3a2dc6a72c14ab22c6f50e4ab956e226b0c0ff74af"
                 },
                 {
                   "address": "CCABDO7UZXYE4W6GVSEGSNNZTKSLFQGKXXQTH6OX7M7GKZ4Z6CUJNGZN"
@@ -1059,6 +1059,51 @@
                   "symbol": "AmountUsers"
                 },
                 {
+                  "i128": "1"
+                }
+              ]
+            },
+            "durability": "persistent"
+          }
+        },
+        [
+          {
+            "last_modified_ledger_seq": 0,
+            "data": {
+              "contract_data": {
+                "ext": "v0",
+                "contract": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMDR4",
+                "key": {
+                  "vec": [
+                    {
+                      "symbol": "AmountUsers"
+                    },
+                    {
+                      "i128": "1"
+                    }
+                  ]
+                },
+                "durability": "persistent",
+                "val": {
+                  "i128": "2"
+                }
+              }
+            },
+            "ext": "v0"
+          },
+          4095
+        ]
+      ],
+      [
+        {
+          "contract_data": {
+            "contract": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMDR4",
+            "key": {
+              "vec": [
+                {
+                  "symbol": "AmountUsers"
+                },
+                {
                   "i128": "11"
                 }
               ]
@@ -1092,6 +1137,51 @@
             "ext": "v0"
           },
           4095
+        ]
+      ],
+      [
+        {
+          "contract_data": {
+            "contract": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMDR4",
+            "key": {
+              "vec": [
+                {
+                  "symbol": "AmountUsersVoted"
+                },
+                {
+                  "i128": "1"
+                }
+              ]
+            },
+            "durability": "persistent"
+          }
+        },
+        [
+          {
+            "last_modified_ledger_seq": 0,
+            "data": {
+              "contract_data": {
+                "ext": "v0",
+                "contract": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMDR4",
+                "key": {
+                  "vec": [
+                    {
+                      "symbol": "AmountUsersVoted"
+                    },
+                    {
+                      "i128": "1"
+                    }
+                  ]
+                },
+                "durability": "persistent",
+                "val": {
+                  "i128": "2"
+                }
+              }
+            },
+            "ext": "v0"
+          },
+          0
         ]
       ],
       [
@@ -2686,7 +2776,7 @@
                           "symbol": "Adm_key"
                         },
                         "val": {
-                          "bytes": "3d90156c314c33f55b3a102007305aa884102b983dc9dcee9f8755d8b81576e3"
+                          "bytes": "643fe70833a2f6dfe59a3f3a2dc6a72c14ab22c6f50e4ab956e226b0c0ff74af"
                         }
                       },
                       {

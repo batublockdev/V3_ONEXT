@@ -132,6 +132,7 @@ pub enum DataKey {
     winnerPool(i128),
     loserPool(i128),
     UserWithdraw(i128, Address),
+    UserWithdrawSupreme(i128, Address),
 }
 #[derive(Clone, Debug, PartialEq, Eq)]
 #[contracttype]

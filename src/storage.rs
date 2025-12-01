@@ -562,17 +562,7 @@ pub fn get_ClaimSupreme(env: Env, gameid: i128) -> i128 {
         .unwrap_or(0);
     amount
 }
-pub fn minus_ClaimSupreme(env: Env, gameid: i128, newAmount: i128) {
-    let money: i128 = env
-        .storage()
-        .persistent()
-        .get(&DataKey::ClaimSupreme(gameid))
-        .unwrap_or(0);
-    let total_money = money - newAmount;
-    env.storage()
-        .persistent()
-        .set(&DataKey::ClaimSupreme(gameid), &total_money);
-}
+
 pub fn add_ClaimSupreme(env: Env, gameid: i128, newAmount: i128) {
     let money: i128 = env
         .storage()
@@ -1039,13 +1029,13 @@ pub fn get_didUserWithdraw(env: Env, user: Address, game_id: i128) -> bool {
 pub fn set_didUserWithdrawSupreme(env: Env, user: Address, game_id: i128) {
     env.storage()
         .persistent()
-        .set(&DataKey::UserWithdraw(game_id, user), &true);
+        .set(&DataKey::UserWithdrawSupreme(game_id, user), &true);
 }
 pub fn get_didUserWithdrawSupreme(env: Env, user: Address, game_id: i128) -> bool {
     let didWithdraw: bool = env
         .storage()
         .persistent()
-        .get(&DataKey::UserWithdraw(game_id, user))
+        .get(&DataKey::UserWithdrawSupreme(game_id, user))
         .unwrap_or(false);
     didWithdraw
 }

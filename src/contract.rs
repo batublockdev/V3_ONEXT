@@ -277,12 +277,13 @@ impl betting for BettingContract {
         if (privateData.id == 0
             || privateData.gameid != game_id.clone()
             || privateData.amount_bet_min <= 0
-            || privateData.users_invated.len() == 0
+            || privateData.users_invated.len() < 2
             || privateData.active
             || privateData.settingAdmin != user.clone())
         {
             panic_with_error!(&env, BettingError::InvalidInputError);
         }
+
         storage::set_privateSetting(env.clone(), privateData.clone());
         storage::add_privateSettingList(env.clone(), game_id.clone(), privateData.id);
         BettingEvents::private_setting(
@@ -585,7 +586,6 @@ impl betting for BettingContract {
                 let money: i128 = storage::get_ClaimSupreme(env.clone(), setting.clone());
                 let amoutgot = money / numberVoter;
                 Self::moveToken(&env, &usd, &contract_address, &user, &amoutgot);
-                storage::minus_ClaimSupreme(env.clone(), setting.clone(), amoutgot);
                 amountWithdrew = (amoutgot, 0);
                 storage::set_didUserWithdrawSupreme(env.clone(), user.clone(), setting.clone());
             }
@@ -636,26 +636,29 @@ impl betting for BettingContract {
                         // loser honest
                         // user gets back trust tokens
                         let mut trust_amount = 0;
+                        let mut usdwithdraw = 0;
                         if usdCollateral {
                             let usd_amount = (amountBet * TWENTY_PERCENT) / 100;
                             Self::moveToken(&env, &usd, &contract_address, &user, &usd_amount);
+                            usdwithdraw = usd_amount;
                         } else {
                             trust_amount = (amountBet * TEN_PERCENT) / 100;
                             Self::moveToken(&env, &trust, &contract_address, &user, &trust_amount);
+                            trust_amount = trust_amount;
                         }
                         if winner_pool == 0 {
                             let user_share = (amountBet * 100) / loser_pool;
                             let user_amount = (user_share * amount_share) / 100;
                             Self::moveToken(&env, &usd, &contract_address, &user, &user_amount);
-                            amountWithdrew = (user_amount, trust_amount);
-                        } else {
-                            amountWithdrew = (0, trust_amount);
+                            usdwithdraw += user_amount;
                         }
                         if storage::is_summiter(env.clone(), setting.clone(), user.clone()) {
                             storage::add_HonestyPoints(env.clone(), user.clone(), 80);
                         } else {
                             storage::add_HonestyPoints(env.clone(), user.clone(), FIFTY_POINTS);
                         }
+                        amountWithdrew = (usdwithdraw, trust_amount);
+
                         let points = storage::get_HonestyPoints(env.clone(), user.clone());
                         let position: u32 = Self::adduser_board(&env, user.clone(), points);
                         BettingEvents::user_honesty_points(&env, user.clone(), points, position);
@@ -667,13 +670,18 @@ impl betting for BettingContract {
                         let user_amount = (user_share * amount_share) / 100;
                         let total = amountBet + user_amount;
                         let mut trust_amount = 0;
+                        let mut usdWithdraw = 0;
+
                         Self::moveToken(&env, &usd, &contract_address, &user, &total);
+                        usdWithdraw += total;
                         if usdCollateral {
                             let usd_amount = (amountBet * TWENTY_PERCENT) / 100;
                             Self::moveToken(&env, &usd, &contract_address, &user, &usd_amount);
+                            usdWithdraw += usd_amount;
                         } else {
                             trust_amount = (amountBet * TEN_PERCENT) / 100;
                             Self::moveToken(&env, &trust, &contract_address, &user, &trust_amount);
+                            trust_amount = trust_amount;
                         }
                         storage::add_HonestyPoints(env.clone(), user.clone(), FIFTY_POINTS);
                         if storage::is_summiter(env.clone(), setting.clone(), user.clone()) {
@@ -685,7 +693,7 @@ impl betting for BettingContract {
                         let position: u32 = Self::adduser_board(&env, user.clone(), points);
                         BettingEvents::user_honesty_points(&env, user.clone(), points, position);
                         storage::set_didUserWithdraw(env.clone(), user.clone(), setting.clone());
-                        amountWithdrew = (total, trust_amount);
+                        amountWithdrew = (usdWithdraw, trust_amount);
                     }
                     _ => {
                         panic_with_error!(&env, BettingError::InvalidInputError);
