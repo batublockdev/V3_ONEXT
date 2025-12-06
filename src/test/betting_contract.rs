@@ -1379,6 +1379,7 @@ let admin = Address::generate(&env);
         let initial_trust_balance = token_trust_client.balance(&addUser1);
         std::println!("User1 honest balance initial {:?}", initial_usd_balance);
         client.bet(&addUser1, &bet);
+
         all_events.push(env.events().all());
 
         adm_usd.mint(&addUser2, &100_000_000);
@@ -1638,6 +1639,7 @@ let admin = Address::generate(&env);
         client.summitResult(&addUser2,&setting, &resultxx2);
         client.assessResult(&addUser1, &setting, &AssessmentKey::approve);
         client.execute_distribution( &setting);
+        client.claim(&admin, &ClaimType::Protocol, &setting);
 
 
         

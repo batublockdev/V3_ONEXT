@@ -295,13 +295,13 @@ pub fn get_HonestyPoints(env: Env, user: Address) -> i128 {
         .unwrap_or(0);
     honesty
 }
-pub fn add_UsersAmount(env: Env, game_setting: i128) {
+pub fn add_UsersAmount(env: Env, game_setting: i128, plus: i128) {
     let amount: i128 = env
         .storage()
         .persistent()
         .get(&DataKey::AmountUsers(game_setting))
         .unwrap_or(0);
-    let total = amount + 1;
+    let total = amount + plus;
     env.storage()
         .persistent()
         .set(&DataKey::AmountUsers(game_setting), &total);
@@ -589,7 +589,7 @@ pub fn add_ClaimProtocolTrust(env: Env, newAmount: i128) {
         .storage()
         .persistent()
         .get(&DataKey::ClaimProtocolTrust)
-        .unwrap_or_else(|| 0);
+        .unwrap_or(0);
 
     currentAmount += newAmount;
     env.storage()
@@ -607,17 +607,20 @@ pub fn get_ClaimProtocol(env: Env) -> i128 {
     amount
 }
 pub fn zero_ClaimProtocol(env: Env) {
-    env.storage().persistent().set(&DataKey::ClaimProtocol, &0);
+    let zero: i128 = 0;
     env.storage()
         .persistent()
-        .set(&DataKey::ClaimProtocolTrust, &0);
+        .set(&DataKey::ClaimProtocol, &zero);
+    env.storage()
+        .persistent()
+        .set(&DataKey::ClaimProtocolTrust, &zero);
 }
 pub fn add_ClaimProtocol(env: Env, newAmount: i128) {
     let mut currentAmount: i128 = env
         .storage()
         .persistent()
         .get(&DataKey::ClaimProtocol)
-        .unwrap_or_else(|| 0);
+        .unwrap_or(0);
 
     currentAmount += newAmount;
     env.storage()

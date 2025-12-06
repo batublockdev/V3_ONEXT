@@ -73,6 +73,11 @@ impl betting for BettingContract {
         let contract_address = env.current_contract_address();
         let usd = storage::get_usd(env.clone());
         let trust: Address = storage::get_trust(env.clone());
+        let betResult: Bet = storage::get_Bet(env.clone(), user.clone(), bet.clone().Setting);
+        if betResult.id != 0 {
+            panic_with_error!(&env, BettingError::BetAlready);
+        }
+
         if bet.clone().amount_bet <= 0 {
             panic_with_error!(&env, BettingError::InvalidInputError);
         }
@@ -104,12 +109,14 @@ impl betting for BettingContract {
         if !privateBet.active {
             if storage::does_bet_active(env.clone(), bet.clone()) {
                 storage::active_private_setting(env.clone(), bet.clone().Setting, true);
+                let useramount = privateBet.clone().users_invated.len() as i128;
+                storage::add_UsersAmount(env.clone(), bet.clone().gameid, useramount);
+
                 BettingEvents::active_setting(&env, privateBet.gameid, privateBet.id);
             }
         }
 
-        storage::add_UsersAmount(env.clone(), bet.clone().Setting);
-        storage::add_UsersAmount(env.clone(), bet.clone().gameid);
+        storage::add_UsersAmount(env.clone(), bet.clone().Setting, 1);
 
         storage::add_total_bet(env.clone(), bet.clone().gameid, bet.clone().amount_bet);
         storage::add_HonestyPoints(env.clone(), user.clone(), MINUS_TWENTY_POINTS);
@@ -175,10 +182,11 @@ impl betting for BettingContract {
        @param user Address The address of the user
        @param setting i128 The id of the setting
     */
-    fn claim_refund(env: Env, user: Address, setting: i128) -> i128 {
+    fn claim_refund(env: Env, user: Address, setting: i128) -> (i128, i128) {
         user.require_auth();
         let contract_address = env.current_contract_address();
         let usd = storage::get_usd(env.clone());
+
         let trust: Address = storage::get_trust(env.clone());
         let mut totalBet = 0;
         let betData: Bet = storage::get_bet(env.clone(), user.clone(), setting.clone());
@@ -186,6 +194,7 @@ impl betting for BettingContract {
             panic_with_error!(&env, BettingError::NoBetHasBeenFound);
         }
         let mut amountUsd = betData.clone().amount_bet;
+        let mut trust_amount = 0;
         let receivedResult: ResultGame =
             storage::get_ResultGame(env.clone(), betData.clone().gameid);
         let (_, startTime, endTime, _) = storage::existBet(env.clone(), betData.clone().gameid);
@@ -215,9 +224,10 @@ impl betting for BettingContract {
             Self::moveToken(&env, &usd, &contract_address, &user, &amountUsd);
             if betData.clone().collateralUsd {
                 let usd_amount = (betData.clone().amount_bet * TWENTY_PERCENT) / 100;
+                amountUsd += usd_amount;
                 Self::moveToken(&env, &usd, &contract_address, &user, &usd_amount);
             } else {
-                let trust_amount = (betData.clone().amount_bet * TEN_PERCENT) / 100;
+                trust_amount = (betData.clone().amount_bet * TEN_PERCENT) / 100;
                 Self::moveToken(&env, &trust, &contract_address, &user, &trust_amount);
             }
             storage::add_HonestyPoints(env.clone(), user.clone(), TWENTY_POINTS);
@@ -228,7 +238,7 @@ impl betting for BettingContract {
         } else {
             panic_with_error!(&env, BettingError::NothingToClaim);
         }
-        amountUsd
+        (amountUsd, trust_amount)
     }
     /*
        @dev This function set a game to be bet on with the admin premission
@@ -334,7 +344,10 @@ impl betting for BettingContract {
     fn summitResult(env: Env, user: Address, setting: i128, result: ResultGame) -> bool {
         user.require_auth();
         let betResult: Bet = storage::get_Bet(env.clone(), user.clone(), setting.clone());
-
+        let privateBet: PrivateBet = storage::get_PrivateBet(env.clone(), setting.clone());
+        if privateBet.clone().id == 0 || !privateBet.active {
+            panic_with_error!(&env, BettingError::SettingBetDoesNotExist);
+        }
         if betResult.id == 0 {
             panic_with_error!(&env, BettingError::BetNotFound);
         }
@@ -425,6 +438,9 @@ impl betting for BettingContract {
     fn assessResult(env: Env, user: Address, setting: i128, desition: AssessmentKey) -> bool {
         user.require_auth();
         let betResult: Bet = storage::get_Bet(env.clone(), user.clone(), setting.clone());
+        if betResult.id == 0 {
+            panic_with_error!(&env, BettingError::BetNotFound);
+        }
         let (exist, startTime, endTime, _) =
             storage::existBet(env.clone(), betResult.clone().gameid);
         if !exist {
@@ -444,9 +460,6 @@ impl betting for BettingContract {
         let mut resultAssessment: ResultAssessment =
             storage::get_ResultAssessment(env.clone(), setting.clone());
 
-        if betResult.id == 0 {
-            panic_with_error!(&env, BettingError::BetNotFound);
-        }
         if resultAssessment.UsersApprove.contains(&user)
             || resultAssessment.UsersReject.contains(&user)
         {
@@ -1327,8 +1340,11 @@ impl BettingContract {
         storage::add_ClaimSupreme(env.clone(), game_id, supremeCourtReward);
         BettingEvents::supreme_reward(&env, game_id, supremeCourtReward);
         storage::add_ClaimProtocol(env.clone(), protocol_retribution);
+
         storage::add_ClaimProtocolTrust(env.clone(), trust_collateral_taken_pool);
+
         storage::save_complain(env.clone(), setting.clone(), complain);
+
         storage::save_winnerPool(env.clone(), setting.clone(), winner_pool);
         storage::save_loserPool(env.clone(), setting.clone(), losers_honest_pool);
         storage::set_pool_total(env.clone(), setting.clone(), amount_gain_pool);

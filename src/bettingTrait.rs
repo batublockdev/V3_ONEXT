@@ -15,7 +15,7 @@ pub trait betting {
         supreme_court: Address,
     );
     fn bet(env: Env, user: Address, bet: Bet) -> bool;
-    fn claim_refund(env: Env, user: Address, setting: i128) -> i128;
+    fn claim_refund(env: Env, user: Address, setting: i128) -> (i128, i128);
     fn set_game(env: Env, game: Game, signature: BytesN<64>) -> bool;
     fn set_private_bet(env: Env, user: Address, privateData: PrivateBet, game_id: i128) -> bool;
     fn add_user_privateBet(env: Env, setting: i128, game: i128, newUser: Address) -> bool;

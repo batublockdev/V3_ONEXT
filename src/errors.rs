@@ -46,6 +46,7 @@ pub enum BettingError {
     UnknownSigner = 224,
     GameResultAlreadySet = 225,
     GameResultAlreadyExecuted = 249,
+    BetAlready = 290,
 
     BetNotFound = 226,
 }
