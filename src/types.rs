@@ -91,7 +91,9 @@ pub struct Bet {
 pub enum DataKey {
     Game(i128),
     AmountUsers(i128),
+    AmountUsersGame(i128),
     AmountUsersVoted(i128),
+    AmountUsersVotedGame(i128),
     TotalBet(i128),
     ResultSupreme(i128),
     Result(i128),

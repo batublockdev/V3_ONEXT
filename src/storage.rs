@@ -306,6 +306,17 @@ pub fn add_UsersAmount(env: Env, game_setting: i128, plus: i128) {
         .persistent()
         .set(&DataKey::AmountUsers(game_setting), &total);
 }
+pub fn add_UsersAmountGame(env: Env, game_setting: i128, plus: i128) {
+    let amount: i128 = env
+        .storage()
+        .persistent()
+        .get(&DataKey::AmountUsersGame(game_setting))
+        .unwrap_or(0);
+    let total = amount + plus;
+    env.storage()
+        .persistent()
+        .set(&DataKey::AmountUsersGame(game_setting), &total);
+}
 
 pub fn UsersAmount(env: Env, game_setting: i128) -> bool {
     let amountX: i128 = env
@@ -323,6 +334,34 @@ pub fn UsersAmount(env: Env, game_setting: i128) -> bool {
     } else {
         false
     }
+}
+pub fn UsersAmountGame(env: Env, game_setting: i128) -> bool {
+    let amountX: i128 = env
+        .storage()
+        .persistent()
+        .get(&DataKey::AmountUsersVotedGame(game_setting))
+        .unwrap_or(0);
+    let amount: i128 = env
+        .storage()
+        .persistent()
+        .get(&DataKey::AmountUsersGame(game_setting))
+        .unwrap_or(0);
+    if amountX == amount {
+        true
+    } else {
+        false
+    }
+}
+pub fn add_UsersAmountVotedGame(env: Env, game_setting: i128) {
+    let amount: i128 = env
+        .storage()
+        .persistent()
+        .get(&DataKey::AmountUsersVotedGame(game_setting))
+        .unwrap_or(0);
+    let total = amount + 1;
+    env.storage()
+        .persistent()
+        .set(&DataKey::AmountUsersVotedGame(game_setting), &total);
 }
 pub fn add_UsersAmountVoted(env: Env, game_setting: i128) {
     let amount: i128 = env

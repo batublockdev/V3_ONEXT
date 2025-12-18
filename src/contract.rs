@@ -110,7 +110,7 @@ impl betting for BettingContract {
             if storage::does_bet_active(env.clone(), bet.clone()) {
                 storage::active_private_setting(env.clone(), bet.clone().Setting, true);
                 let useramount = privateBet.clone().users_invated.len() as i128;
-                storage::add_UsersAmount(env.clone(), bet.clone().gameid, useramount);
+                storage::add_UsersAmountGame(env.clone(), bet.clone().gameid, useramount);
 
                 BettingEvents::active_setting(&env, privateBet.gameid, privateBet.id);
             }
@@ -384,7 +384,7 @@ impl betting for BettingContract {
         resultAssessment.gameid = betResult.clone().gameid;
         storage::set_ResultAssessment(env.clone(), setting.clone(), resultAssessment.clone());
         storage::add_UsersAmountVoted(env.clone(), setting.clone());
-        storage::add_UsersAmountVoted(env.clone(), betResult.clone().gameid);
+        storage::add_UsersAmountVotedGame(env.clone(), betResult.clone().gameid);
 
         if betResult.clone().collateralUsd {
             storage::add_approve_total(
@@ -479,8 +479,8 @@ impl betting for BettingContract {
         }
 
         //Now we check if all the user in the game have voted
-        storage::add_UsersAmountVoted(env.clone(), betResult.clone().gameid);
-        if storage::UsersAmount(env.clone(), betResult.clone().gameid) {
+        storage::add_UsersAmountVotedGame(env.clone(), betResult.clone().gameid);
+        if storage::UsersAmountGame(env.clone(), betResult.clone().gameid) {
             BettingEvents::all_voteGame(&env, betResult.clone().gameid);
         }
 
@@ -657,7 +657,6 @@ impl betting for BettingContract {
                         } else {
                             trust_amount = (amountBet * TEN_PERCENT) / 100;
                             Self::moveToken(&env, &trust, &contract_address, &user, &trust_amount);
-                            trust_amount = trust_amount;
                         }
                         if winner_pool == 0 {
                             let user_share = (amountBet * 100) / loser_pool;
@@ -694,7 +693,6 @@ impl betting for BettingContract {
                         } else {
                             trust_amount = (amountBet * TEN_PERCENT) / 100;
                             Self::moveToken(&env, &trust, &contract_address, &user, &trust_amount);
-                            trust_amount = trust_amount;
                         }
                         storage::add_HonestyPoints(env.clone(), user.clone(), FIFTY_POINTS);
                         if storage::is_summiter(env.clone(), setting.clone(), user.clone()) {
@@ -738,7 +736,7 @@ impl betting for BettingContract {
             panic_with_error!(&env, BettingError::GameDoesNotExist);
         }
         if endTime + (5 * ONE_HOUR_SECONDS) > env.ledger().timestamp() as u32 {
-            if !storage::UsersAmount(env.clone(), result.clone().gameid) {
+            if !storage::UsersAmountGame(env.clone(), result.clone().gameid) {
                 panic_with_error!(&env, BettingError::GameAssesmentHasFinished);
             }
         }
@@ -836,7 +834,7 @@ impl betting for BettingContract {
         }
         //check ....
         if endTime + (5 * ONE_HOUR_SECONDS) > env.ledger().timestamp() as u32 {
-            if !storage::UsersAmount(env.clone(), gameid.clone()) {
+            if !storage::UsersAmountGame(env.clone(), gameid.clone()) {
                 panic_with_error!(&env, BettingError::GameAssesmentHasFinished);
             }
         }
